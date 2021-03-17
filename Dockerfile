@@ -6,9 +6,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_15.x | bash -
 RUN apt install -y nodejs
 RUN npm --prefix /src install puppeteer
 
-ENV LC_ALL en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US.UTF-8
+ENV LC_ALL it_IT.UTF-8
+ENV LANG it_IT.UTF-8
+ENV LANGUAGE it_IT.UTF-8
 
 WORKDIR /
 ARG requirements=requirements.txt
