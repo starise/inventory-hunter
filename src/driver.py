@@ -11,6 +11,7 @@ import subprocess
 
 from abc import ABC, abstractmethod
 from selenium import webdriver
+import worker
 
 
 user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4427.0 Safari/537.36'
@@ -118,6 +119,21 @@ class RequestsDriver(Driver):
         return HttpGetResponse(r.text, r.url, status_code=r.status_code)
 
 
+class LeanAndMeanDriver(Driver):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.client = worker.init_client('lean_and_mean')
+
+    def get(self, url) -> HttpGetResponse:
+        response = self.client.get(
+            request_id=1337,  # doesn't matter right now
+            url=str(url),
+            timeout=self.timeout,
+        )
+
+        return HttpGetResponse(response.data, url, status_code=response.status_code)
+
+
 class DriverRepo:
     def __init__(self, timeout):
         self.data_dir = pathlib.Path('data').resolve()
@@ -125,8 +141,9 @@ class DriverRepo:
         self.requests = RequestsDriver(data_dir=self.data_dir, timeout=timeout)
         self.selenium = SeleniumDriver(data_dir=self.data_dir, timeout=timeout)
         self.puppeteer = PuppeteerDriver(data_dir=self.data_dir, timeout=timeout)
+        self.lean_and_mean = LeanAndMeanDriver(data_dir=self.data_dir, timeout=timeout)
 
 
 def init_drivers(config):
-    timeout = max(config.refresh_interval, 15)  # in seconds
+    timeout = int(max(config.refresh_interval, 15))  # in seconds
     return DriverRepo(timeout)

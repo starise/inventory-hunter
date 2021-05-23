@@ -10,12 +10,12 @@ ENV LC_ALL it_IT.UTF-8
 ENV LANG it_IT.UTF-8
 ENV LANGUAGE it_IT.UTF-8
 
-WORKDIR /
+WORKDIR /src
 ARG requirements=requirements.txt
-COPY $requirements /src/requirements.txt
-RUN pip install -r /src/requirements.txt
-COPY VERSION /src/version.txt
-COPY pyproject.toml /src/pyproject.toml
-COPY src /src
+COPY $requirements requirements.txt
+RUN pip install -r requirements.txt --no-cache-dir
+COPY VERSION version.txt
+COPY pyproject.toml .
+COPY src .
 
-ENTRYPOINT ["bash", "/src/run.bash"]
+ENTRYPOINT ["./init.bash"]
